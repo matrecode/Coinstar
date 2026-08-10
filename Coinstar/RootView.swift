@@ -8,18 +8,12 @@
 import SwiftUI
 
 struct RootView: View {
-    @ObservedObject var coordinator: AppCoordinator
 
     var body: some View {
-        switch coordinator.state.flow {
-        case .onboarding:
-            Text("Onboarding Coordinator")
-        case .registration:
-            Text("Registration Coordinator")
-        }
+        Text("Onboarding")
     }
 }
 
 #Preview {
-    RootView(coordinator: AppCoordinator())
+    RootView()
 }
