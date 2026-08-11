@@ -1,0 +1,24 @@
+{
+  "onboardingPages": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "title": "Welcome to the App",
+      "subtitle": "Get started with a simple and seamless experience."
+    },
+    {
+      "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+      "title": "Discover New Features",
+      "subtitle": "Explore powerful features designed to make your experience better."
+    },
+    {
+      "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+      "title": "Stay Connected",
+      "subtitle": "Keep everything you need organized and accessible in one place."
+    },
+    {
+      "id": "8f14e45f-ea3f-4a2b-9c7d-123456789abc",
+      "title": "You're All Set",
+      "subtitle": "Let's get started and make the most of your experience."
+    }
+  ]
+}
