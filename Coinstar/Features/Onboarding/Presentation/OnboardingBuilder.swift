@@ -11,21 +11,28 @@ import SwiftUI
 @MainActor
 enum OnboardingBuilder {
     
-    static func makeView() -> some View {
-
-        let onBoardingService = OnboardingService(
-            networkService: NetworkService()
-        )
+    static func makeView(container: AppContainer) -> some View {
+        let dataSource: OnboardingDataSource
+        
+        if container.configuration.environment.userLocalData {
+            dataSource = OnboardingLocalDataSourceImpl()
+        } else if let baseUrl = container.configuration.environment.apiBasUrl {
+            let endpoint = baseUrl.appendingPathComponent("onboarding")
+            dataSource = OnboardingRemoteDataSourceImpl(
+                networkClient: container.networkClient,
+                endpoint: endpoint
+            )
+        } else {
+            dataSource = OnboardingLocalDataSourceImpl()
+        }
+        
         let onboardingRepository = OnboardingRepositoryImpl(
-            onboardignService: onBoardingService
+            onboardingDataSource: dataSource
         )
-        let onBoardingUseCase = OnboardingUseCaseImpl(
+        let onboardingUseCase = GetOnboardingPageUseCaseImpl(
             onboardingRepository: onboardingRepository
         )
-        let onboardingViewModel = OnboardingViewModel(
-            onboardingUseCase: onBoardingUseCase
-        )
-        
-        return OnboardingView(onboardingViewModel: onboardingViewModel)
+        let viewModel = OnboardingViewModel(onboardingUseCase: onboardingUseCase)
+        return OnboardingView(onboardingViewModel: viewModel)
     }
 }

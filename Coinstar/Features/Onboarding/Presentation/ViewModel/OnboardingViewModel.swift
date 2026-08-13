@@ -8,23 +8,37 @@
 import Foundation
 import Combine
 
+enum OnboardingState: Equatable {
+    case idle
+    case loading
+    case loaded([Onboarding])
+    case failure(String)
+}
+
+@MainActor
+@Observable
 class OnboardingViewModel: ObservableObject {
-    private let onboardingUseCase: OnboardingUseCase
-    @Published var onbaordingPages: [Onboarding] = []
-    private var cancellables = Set<AnyCancellable>()
+    private let onboardingUseCase: GetOnboardinPageUseCase
+    private(set) var onBoardingState: OnboardingState = .idle
     
-    init(onboardingUseCase: OnboardingUseCase){
+    init(onboardingUseCase: GetOnboardinPageUseCase){
         self.onboardingUseCase = onboardingUseCase
     }
     
-    func getOnboardingPages() {
-        onboardingUseCase.getOnboardingPages()
-            .sink(receiveCompletion: { completion in
-                // handle errors
-            }, receiveValue: { pages in
-                self.onbaordingPages = pages
-            })
-            .store(in: &cancellables)
-        print(onbaordingPages)
+    func getOnboardingPages() async {
+        
+        guard onBoardingState == .idle else {
+            return
+        }
+        
+        onBoardingState = .loading
+        
+        do {
+            let onbaordingPages = try await onboardingUseCase.getOnboardingPages()
+            onBoardingState = .loaded(onbaordingPages)
+        } catch {
+            onBoardingState = .failure(error.localizedDescription)
+        }
+        
     }
 }

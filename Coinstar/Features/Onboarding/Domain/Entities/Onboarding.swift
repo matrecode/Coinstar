@@ -7,12 +7,8 @@
 
 import Foundation
 
-struct Onboarding: Codable, Sendable, Identifiable {
+struct Onboarding: Codable, Sendable, Identifiable, Equatable {
     var id: UUID
     let title: String
     let subtitle: String
-}
-
-struct OnboardingResponse: Codable, Sendable {
-    let onboardingPages: [Onboarding]
 }
