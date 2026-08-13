@@ -11,4 +11,5 @@ struct Onboarding: Codable, Sendable, Identifiable, Equatable {
     var id: UUID
     let title: String
     let subtitle: String
+    let image: String
 }

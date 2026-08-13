@@ -20,6 +20,12 @@ enum OnboardingState: Equatable {
 class OnboardingViewModel: ObservableObject {
     private let onboardingUseCase: GetOnboardinPageUseCase
     private(set) var onBoardingState: OnboardingState = .idle
+    private(set) var currentPageIndex: Int = 0
+    
+    var isLastPage: Bool {
+        guard case .loaded(let pages) = onBoardingState else { return false }
+        return currentPageIndex == pages.count - 1
+    }
     
     init(onboardingUseCase: GetOnboardinPageUseCase){
         self.onboardingUseCase = onboardingUseCase
@@ -40,5 +46,16 @@ class OnboardingViewModel: ObservableObject {
             onBoardingState = .failure(error.localizedDescription)
         }
         
+    }
+    
+    func setPage(_ index: Int) {
+        currentPageIndex = index
+    }
+    
+    @discardableResult
+    func advance(totalPages: Int) -> Bool {
+        guard currentPageIndex < totalPages - 1 else { return false }
+        currentPageIndex += 1
+        return true
     }
 }
