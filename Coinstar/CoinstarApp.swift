@@ -9,10 +9,10 @@ import SwiftUI
 
 @main
 struct CoinstarApp: App {
-    @StateObject var appCordinator = AppCoordinator()
+    @State private var appContainer = AppContainer()
     var body: some Scene {
         WindowGroup {
-            RootView(coordinator: appCordinator)
+            RootView(appContainer: appContainer)
         }
     }
 }
