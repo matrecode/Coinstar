@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    @State private var onboardingViewModel: OnboardingViewModel
-    init(onboardingViewModel: OnboardingViewModel) {
-        _onboardingViewModel = State(wrappedValue: onboardingViewModel)
+    @Bindable private var coordinator: OnboardingCoordinator
+    init(coordinator: OnboardingCoordinator) {
+        self.coordinator = coordinator
     }
     var body: some View {
         Group {
-            switch onboardingViewModel.onBoardingState {
+            switch coordinator.viewModel.onBoardingState {
             case .idle, .loading:
                 ProgressView()
             case .loaded(let pages):
                 OnboardingContentView(
-                    viewModel: onboardingViewModel,
+                    coordinator: coordinator,
                     pages: pages
                 )
             case .failure(let message):
@@ -31,12 +31,12 @@ struct OnboardingView: View {
             }
         }
         .task {
-            await onboardingViewModel.getOnboardingPages()
+            await coordinator.viewModel.getOnboardingPages()
         }
     }
     
     private struct OnboardingContentView: View {
-        @Bindable var viewModel: OnboardingViewModel
+        @Bindable var coordinator: OnboardingCoordinator
         let pages: [Onboarding]
         
         var body: some View {
@@ -44,20 +44,20 @@ struct OnboardingView: View {
                 OnboardingSlider(
                     pages: pages,
                     currentPageIndex: Binding(
-                        get: { viewModel.currentPageIndex },
-                        set: { viewModel.setPage($0) }
+                        get: { coordinator.viewModel.currentPageIndex },
+                        set: { coordinator.viewModel.setPage($0) }
                     )
                 )
                 
                 HStack {
                     OnboardingPageIndicator(
                         totalPages: pages.count,
-                        currentPageIndex: viewModel.currentPageIndex
+                        currentPageIndex: coordinator.viewModel.currentPageIndex
                     )
                     .padding(.top, 16)
                     Spacer()
-                    OnboardingButton(isLastPage: viewModel.isLastPage) {
-                        handleNext()
+                    OnboardingButton {
+                        coordinator.send(.next)
                     }
                 }
             }
@@ -66,10 +66,10 @@ struct OnboardingView: View {
         }
         
         private func handleNext() {
-            if viewModel.isLastPage {
+            if coordinator.viewModel.isLastPage {
                 // MARK: - TODO: Navigate to the next screen after onboarding completes
             } else {
-                viewModel.advance(totalPages: pages.count)
+                coordinator.viewModel.advance(totalPages: pages.count)
             }
         }
     }
@@ -110,7 +110,6 @@ struct OnboardingView: View {
     }
     
     private struct OnboardingButton: View {
-        let isLastPage: Bool
         let action: () -> Void
 
         var body: some View {
@@ -128,7 +127,7 @@ struct OnboardingView: View {
     private struct OnboardingPageView: View {
         let page: Onboarding
         var body: some View {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(spacing: 24) {
                 VStack(alignment: .center) {
                     Image(page.image)
                         .resizable()
