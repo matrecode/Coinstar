@@ -12,6 +12,14 @@ import SwiftUI
 enum OnboardingBuilder {
     
     static func makeView(container: AppContainer) -> some View {
+        let coordinator = makeCoordinator(
+            container: container,
+            eventSink: PreviewAppFlowEventSink()
+        )
+        return OnboardingView(coordinator: coordinator)
+    }
+    
+    static func makeCoordinator(container: AppContainer, eventSink: any AppFlowEventSink) -> OnboardingCoordinator{
         let dataSource: OnboardingDataSource
         
         if container.configuration.environment.userLocalData {
@@ -33,6 +41,14 @@ enum OnboardingBuilder {
             onboardingRepository: onboardingRepository
         )
         let viewModel = OnboardingViewModel(onboardingUseCase: onboardingUseCase)
-        return OnboardingView(onboardingViewModel: viewModel)
+        return OnboardingCoordinator(
+            viewModel: viewModel,
+            eventSink: eventSink,
+        )
     }
+}
+
+@MainActor
+private final class PreviewAppFlowEventSink: AppFlowEventSink {
+    func send(_ event: AppFlowEvent) {}
 }
