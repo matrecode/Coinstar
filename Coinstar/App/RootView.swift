@@ -42,12 +42,9 @@ struct RootView: View {
                 )
                 
             case .accountVerification:
-//                AccountVerificationCoordinatorView(
-//                    eventSink: appFlowCoordinator
-//                )
-                PlaceholderFlowView(
-                    title: "Account verification",
-                    message: "Account Verification flow will be added next."
+                AccountVerificationCoordinatorView(
+                    container: appContainer,
+                    eventSink: appFlowCoordinator
                 )
                 
             case .registration:
